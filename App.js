@@ -1,19 +1,16 @@
-var PORT = process.env.PORT || 5000;
-const https = require('https');
+'use strict';
+const PORT = process.env.PORT || 8080;
 const fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var url = require('url');
 var Promise = require('promise');
-
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
 var bodyParser = require('body-parser'); 
 const { json } = require('express');
 var app = express();
-//-------------------------------------------
+
+app.enable('trust proxy');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((Request,Response,next) =>{
@@ -30,6 +27,7 @@ let db = new sqlite3.Database('./db/gitapp.db', sqlite3.OPEN_READWRITE, (err) =>
   }
   console.log('connected to feed');
 });
+
 
 //--------------------------------------------------------------
 app.get('/app/vt', (req, res) => {
@@ -265,8 +263,11 @@ app.get("/app/checkacc", (req, res) => {
     }
   });
 });
-//-----------------------------------------------------------------------
+//----------------------------------------------------
 
 
-//-------------------------------------------------------------------------
-https.createServer(options,app).listen(PORT);
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+  console.log('Press Ctrl+C to quit.');
+});
+module.exports = app;
