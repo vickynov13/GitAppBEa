@@ -1,0 +1,19 @@
+{
+  "name": "gitapp",
+  "version": "1.0.0",
+  "description": "\u001b[A\u001b[A\u001b[C\u001b[3~\u001b[3~\u001b[3~\u001b[B\u001b[B",
+  "main": "App.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
+    "promise": "^8.1.0",
+    "sqlite3": "^4.2.0"
+  }
+}
