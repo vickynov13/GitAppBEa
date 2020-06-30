@@ -273,12 +273,12 @@ app.get("/app/getmytodo", (req, res) => {
   let gname = headr["gname"];
   console.log("skey : "+skey +", uid :"+uid+", gname:"+gname);
   if(uid==gname){
-    var sql3 ="SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = ? ORDER BY id DESC";
+    var sql3 ="SELECT id as msgid, short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = ? ORDER BY status DESC, id DESC";
     var params3 =[uid];
     var sql2 = "SELECT ? as res";
     var params2 =[1];
   }else if(uid!=gname){
-    var sql3 ="SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = ? AND secret = 'false') OR (sender=? AND receiver = ?) ORDER BY id DESC";
+    var sql3 ="SELECT id as msdid, short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = ? AND secret = 'false') OR (sender=? AND receiver = ?) ORDER BY status DESC, id DESC";
     var params3 =[gname,uid,gname];
     var sql2 = "SELECT count(p_username) as res FROM USERACCESS_INFO WHERE p_username = ? and g_username = ?";
     var params2 =[uid,gname];
@@ -455,10 +455,41 @@ app.post("/app/postmessage", (req, res) => {
       console.log("error1");
      return res.send([{'error':'true','status': 'db issue'}]);
     }else{
-      
       if(results[0].res===1){
           db.run(sql2,params2, (err, results) => {
             if (err) {
+              return res.send([{'error':'true','status': 'db issue INSERT error'}]);
+            }else{
+              return res.send([{'error':'false','status': 'success'}]);
+            }
+          });
+      }else{
+       return res.send([{'error':'true','status': 'loginissue'}]);
+      }
+    }
+  });
+});
+//-----------------------------------------------------------------
+
+app.post("/app/updmsgstatus", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let cngsts = req.body.cngsts;
+  let uid = req.body.uid;
+  let msgid = req.body.msgid;
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var sql2 ="UPDATE All_MESSAGES SET status = ? WHERE id = ?";
+  var params1 =[uid, skey];
+  var params2 =[cngsts, msgid];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      console.log("error1");
+     return res.send([{'error':'true','status': 'db issue'}]);
+    }else{
+      if(results[0].res===1){
+          db.run(sql2,params2, (err, results) => {
+            if (err) {
+              console.log("error2");
               return res.send([{'error':'true','status': 'db issue INSERT error'}]);
             }else{
               return res.send([{'error':'false','status': 'success'}]);

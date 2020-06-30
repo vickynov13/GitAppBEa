@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:\Users\ELCOT\Downloads\Node Projects\Server\GitAppBEa\GitAppBEa\db\gitapp.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1605"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,12:mainAll_MESSAGES"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="All_MESSAGES" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="5" mode="0"/></sort><column_widths><column index="1" value="40"/><column index="2" value="145"/><column index="3" value="194"/><column index="4" value="50"/><column index="5" value="50"/><column index="6" value="103"/><column index="7" value="68"/><column index="8" value="73"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="MENU_ITEMS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="62"/><column index="2" value="97"/><column index="3" value="105"/><column index="4" value="85"/><column index="5" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USERACCESS_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="88"/><column index="3" value="88"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USER_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="52"/><column index="3" value="72"/><column index="4" value="77"/><column index="5" value="179"/><column index="6" value="72"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USER_LOGIN_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="72"/><column index="2" value="126"/><column index="3" value="281"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="120"/><column index="2" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = 'vikynov13' ORDER BY id DESC
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:\Users\ELCOT\Downloads\Node Projects\Server\GitAppBEa\GitAppBEa\db\gitapp.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1605"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,12:mainAll_MESSAGES"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="All_MESSAGES" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="40"/><column index="2" value="110"/><column index="3" value="203"/><column index="4" value="50"/><column index="5" value="50"/><column index="6" value="68"/><column index="7" value="68"/><column index="8" value="73"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="MENU_ITEMS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="62"/><column index="2" value="97"/><column index="3" value="105"/><column index="4" value="85"/><column index="5" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USERACCESS_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="88"/><column index="3" value="88"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USER_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="52"/><column index="3" value="72"/><column index="4" value="77"/><column index="5" value="179"/><column index="6" value="72"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USER_LOGIN_INFO" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="72"/><column index="2" value="126"/><column index="3" value="281"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="120"/><column index="2" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT id as msdid, short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = 'vikynov13' ORDER BY id DESC
 
-SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = 'vikynov13' AND secret = 'false') OR sender='userone' ORDER BY id DESC
+SELECT id as msdid, short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = 'vikynov13' AND secret = 'false') OR sender='userone' ORDER BY id DESC
 
 
 INSERT INTO All_MESSAGES (short_msg,long_msg,secret,receiver,sender,added_dt) VALUES (?,?,?,?,?,date());
@@ -9,11 +9,11 @@ select strftime('%d-%m',added_dt) as adddte FROM All_MESSAGES WHERE receiver = '
 
 SELECT count(p_username) as res FROM USERACCESS_INFO WHERE p_username = 'userone' and g_username = 'vikynov13'
 
-DELETE FROM USERACCESS_INFO WHERE p_username = 'vikynov13' and g_username = 'vikynov14'
-
-
-UPDATE USERACCESS_INFO SET request_status = 'C' WHERE p_username = 'vikynov13' and g_username = 'vikynov15'
-
+DELETE FROM USERACCESS_INFO WHERE p_username = 'vikynov13' and g_username = 'vikynov14'
+
+
+UPDATE USERACCESS_INFO SET request_status = 'C' WHERE p_username = 'vikynov13' and g_username = 'vikynov15'
+
 
 select date()
 
@@ -27,24 +27,26 @@ INSERT INTO USERACCESS_INFO (p_username,g_username) VALUES ('','')
 
 SELECT fname, lname, username, 'false' as error FROM USER_INFO WHERE username in (SELECT g_username FROM USERACCESS_INFO WHERE p_username = 'vikynov13' AND request_status = 'P');
 
+
+
+SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = 'vickynov13' AND secret = 'false') OR (sender='userone' AND receiver = 'vickynov13') ORDER BY id DESC
+
+
+
+UPDATE All_MESSAGES SET status = 'some' WHERE id = '14'
 
-
-SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = 'vickynov13' AND secret = 'false') OR (sender='userone' AND receiver = 'vickynov13') ORDER BY id DESC
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT * FROM All_MESSAGES ORDER BY status DESC, id DESC
+
+
+
+
+
+
+
+
+
+
+
 
 
 </sql><current_tab id="0"/></tab_sql></sqlb_project>
