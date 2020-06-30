@@ -1,22 +1,25 @@
-'use strict';
-const PORT = process.env.PORT || 8080;
+var PORT = process.env.PORT || 5000;
+const https = require('https');
 const fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var url = require('url');
 var Promise = require('promise');
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 var bodyParser = require('body-parser'); 
 const { json } = require('express');
 var app = express();
-
-app.enable('trust proxy');
-
+//-------------------------------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((Request,Response,next) =>{
   Response.append('Access-Control-Allow-Origin', ['*']);
   Response.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  Response.append('Access-Control-Allow-Headers', 'Content-Type,skey,uid,sterm,gname');
+  Response.append('Access-Control-Allow-Headers', 'Content-Type,skey,uid,sterm,gname,upd');
     next();
 });
 //------------------------------------------------
@@ -27,7 +30,6 @@ let db = new sqlite3.Database('./db/gitapp.db', sqlite3.OPEN_READWRITE, (err) =>
   }
   console.log('connected to feed');
 });
-
 
 //--------------------------------------------------------------
 app.get('/app/vt', (req, res) => {
@@ -184,7 +186,7 @@ app.get('/app/myusrlist', (req, res) => {
   let skey = headr['skey'];
   let uid = headr['uid'];
   var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
-  var sql2 ='SELECT fname, lname, username, ? as hasaccess,? as updated, ? as error from USER_INFO where username in (SELECT g_username  from USERACCESS_INFO WHERE p_username = ?);';
+  var sql2 ="SELECT fname, lname, username, ? as hasaccess,? as updated, ? as error from USER_INFO where username in (SELECT g_username  from USERACCESS_INFO WHERE p_username = ? and request_status='C')";
   var params1 =[uid, skey];
   var params2 =['true','true','false',uid];
   db.all(sql1,params1, (err, results, fields) => {
@@ -248,7 +250,7 @@ app.get("/app/checkacc", (req, res) => {
   headr = req.headers;
   let uid = headr["uid"];
   let gname = headr["gname"];
-  var sql1 ='SELECT count(id) as res FROM USERACCESS_INFO WHERE p_username = ? and g_username = ?';
+  var sql1 ="SELECT count(id) as res FROM USERACCESS_INFO WHERE p_username = ? and g_username = ? and request_status='C'";
   var params1 =[uid, gname];
   db.all(sql1,params1, (err, results) => {
     if (err) {
@@ -256,18 +258,217 @@ app.get("/app/checkacc", (req, res) => {
      return res.send([{'hasaccess':'null','error':'true'}]);
     }else{
       if(results[0].res===1){
-        return res.send([{'hasaccess':true,'error':'false'}]);
+        return res.send([{'hasaccess':'true','error':'false'}]);
       }else{
-        return res.send([{'hasaccess':false,'error':'false'}]);
+        return res.send([{'hasaccess':'false','error':'false'}]);
       }
     }
   });
 });
-//----------------------------------------------------
-
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
+//-----------------------------------------------------------------------
+app.get("/app/getmytodo", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let uid = headr["uid"];
+  let gname = headr["gname"];
+  console.log("skey : "+skey +", uid :"+uid+", gname:"+gname);
+  if(uid==gname){
+    var sql3 ="SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = ? ORDER BY id DESC";
+    var params3 =[uid];
+    var sql2 = "SELECT ? as res";
+    var params2 =[1];
+  }else if(uid!=gname){
+    var sql3 ="SELECT short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'false' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE (receiver = ? AND secret = 'false') OR (sender=? AND receiver = ?) ORDER BY id DESC";
+    var params3 =[gname,uid,gname];
+    var sql2 = "SELECT count(p_username) as res FROM USERACCESS_INFO WHERE p_username = ? and g_username = ?";
+    var params2 =[uid,gname];
+  }
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var params1 =[uid, skey];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      console.log("error1");
+     return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+    }else{
+      if(results[0].res===1){
+       db.all(sql2,params2, (err, results) => {
+         if (err) {
+           console.log("error2");
+           return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+         }else{if(results[0].res===1){
+          db.all(sql3,params3, (err, results) => {
+            if (err) {
+              console.log("error2");
+              return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+            }else{
+              return res.send(results);
+            }  
+            });
+         }else{
+          console.log("error3");
+          console.log(results[0].res);
+          return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+         }
+         }  
+         });
+      }else{
+       console.log("error3");
+       console.log(results[0].res);
+       return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+      }
+    }
+  });
 });
-module.exports = app;
+
+//-------------------------------------------------------------------------
+app.post('/app/createaccreq', (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let uid = req.body.uid;
+  let gname = req.body.gname; 
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var params1 =[uid, skey];
+  var sql2 ='SELECT count(p_username) as res FROM USERACCESS_INFO WHERE p_username = ? and g_username = ?';
+  var params2 =[uid, gname];
+  var sql3 ='INSERT INTO USERACCESS_INFO (p_username,g_username) VALUES (?,?)';
+  var params3 =[uid, gname];
+  db.all(sql1, params1,(err, result, fields)=> {
+    if (!err) {
+      if(result[0].res===1){
+        db.all(sql2, params2, function (err, result) {
+          if(err){
+            return res.send([{'error':'true','status': null}]);
+          } else {
+            if(result[0].res!=0){
+              return res.send([{'error':'false','status': 'AE'}]);
+            }else{
+              db.run(sql3, params3, function (err, result) {
+                if(err){
+                  return res.send([{'error':'false','status': 'TE'}]);
+                } else {
+                  return res.send([{'error':'false','status': 'AC'}]);
+                }
+              });
+            }
+          }
+        });
+      } else {
+        return res.send([{'error':'true','status': null}]);
+      }
+    }else{
+      console.log(err);
+      return res.send([{'error':'true','status': null}]);
+	}
+  });
+});
+//------------------------------------------------------------------------
+
+app.get("/app/getrequests", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let uid = headr["uid"];
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var sql2 ="SELECT fname, lname, username, 'false' as error FROM USER_INFO WHERE username in (SELECT p_username FROM USERACCESS_INFO WHERE g_username = ? AND request_status = 'P')";
+  var params1 =[uid, skey];
+  var params2 =[uid];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      console.log("error1");
+     return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+    }else{
+      if(results[0].res===1){
+       db.all(sql2,params2, (err, results) => {
+         if (err) {
+           console.log("error2");
+           return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+         }else{
+           return res.send(results);
+         }  
+         });
+      }else{
+       console.log("error3");
+       console.log(results[0].res);
+       return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
+      }
+    }
+  });
+});
+
+//----------------------------------------------------------------------
+app.post("/app/accrejreq", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let gname = req.body.gname;
+  let uid = req.body.uid;
+  let upd = req.body.upd;
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var sql2 ="UPDATE USERACCESS_INFO SET request_status = 'C' WHERE p_username = ? and g_username = ?";
+  var sql3 ="DELETE FROM USERACCESS_INFO WHERE p_username = ? and g_username = ?";
+  var params1 =[uid, skey];
+  var params2 =[gname, uid];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      console.log("error1");
+     return res.send([{'error':'true','status': 'db issue'}]);
+    }else{
+      
+      if(results[0].res===1){
+        if(upd === "Add"){
+          console.log(params2);
+          db.run(sql2,params2, (err, results) => {
+            if (err) {
+              return res.send([{'error':'true','status': 'db issue UPDATE error'}]);
+            }else{
+              return res.send([{'error':'false','status': 'success'}]);
+            }
+          });
+        }else if(upd === "Rem"){
+          db.run(sql3,params2, (err, results) => {
+            if (err) {
+              return res.send([{'error':'true','status': 'db issue DELETE error'}]);
+            }else{
+              return res.send([{'error':'false','status': 'success'}]);
+            }
+          });
+        }
+      }else{
+       return res.send([{'error':'true','status': 'loginissue'}]);
+      }
+    }
+  });
+});
+//-----------------------------------------------------------------
+app.post("/app/postmessage", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let smsg = req.body.smsg;
+  let lmsg = req.body.lmsg;
+  let receiver = req.body.receiver;
+  let sender = req.body.sender;
+  let secret = req.body.secret;
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var sql2 ="INSERT INTO All_MESSAGES (short_msg,long_msg,secret,receiver,sender,added_dt) VALUES (?,?,?,?,?,date())";
+  var params1 =[sender, skey];
+  var params2 =[smsg, lmsg,secret,receiver,sender];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      console.log("error1");
+     return res.send([{'error':'true','status': 'db issue'}]);
+    }else{
+      
+      if(results[0].res===1){
+          db.run(sql2,params2, (err, results) => {
+            if (err) {
+              return res.send([{'error':'true','status': 'db issue INSERT error'}]);
+            }else{
+              return res.send([{'error':'false','status': 'success'}]);
+            }
+          });
+      }else{
+       return res.send([{'error':'true','status': 'loginissue'}]);
+      }
+    }
+  });
+});
+//-----------------------------------------------------------------
+https.createServer(options,app).listen(PORT);
