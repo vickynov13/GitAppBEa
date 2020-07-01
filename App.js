@@ -34,12 +34,12 @@ let db = new sqlite3.Database('./db/gitapp.db', sqlite3.OPEN_READWRITE, (err) =>
 //--------------------------------------------------------------
 app.get('/app/vt', (req, res) => {
 	headr=req.headers;
-    console.log(headr['skey']);
+    //console.log(headr['skey']);
 	const {
   randomBytes
 } = require('crypto');
 	const uid = Math.random().toString(36).slice(2) + randomBytes(8).toString('hex') + new Date().getTime();
-	console.log(uid);
+//console.log(uid);
   db.all(`select fname, lname from USER_INFO`, (err, results, fields) => {
      if (err) {
        res.sendStatus(400);
@@ -85,7 +85,7 @@ app.get('/app/vt', (req, res) => {
 });
 ///-------------------------------------------------------------------
 app.post('/app/registeruser', (req, res) => {
-  console.log("post triggered");
+  //console.log("post triggered");
   let fname = req.body.fname;
   let lname = req.body.lname;  
   let username = req.body.username;
@@ -119,7 +119,7 @@ app.post('/app/login', (req, res) => {
   let password = req.body.password; 
   const {randomBytes} = require('crypto');
 const uid = Math.random().toString(36).slice(2) + randomBytes(8).toString('hex') + new Date().getTime();
-	console.log(uid);
+	//console.log(uid);
   var sql1 ='SELECT * FROM USER_LOGIN_INFO WHERE USERNAME like ? AND PASSWORD = ?';
   var sql2 ='UPDATE USER_LOGIN_INFO SET sessionkey = ? WHERE USERNAME like ?';
   var params1 =[username, password];
@@ -128,7 +128,7 @@ const uid = Math.random().toString(36).slice(2) + randomBytes(8).toString('hex')
       var rstring=JSON.stringify(result);
       var rjson =  JSON.parse(rstring);
       if(rjson.length>0){
-        console.log(rjson.length);
+        //console.log(rjson.length);
         var usrnme = rjson[0].username;
         var params2 =[uid, usrnme];
         db.run(sql2, params2, function (err, result) {
@@ -142,7 +142,7 @@ const uid = Math.random().toString(36).slice(2) + randomBytes(8).toString('hex')
         return res.send({'error':'invalid','uid': null, 'skey':null});
       }
     }else{
-      console.log(err);
+      //console.log(err);
 	}
   });
 });
@@ -157,13 +157,13 @@ app.get('/app/getuserdetails', (req, res) => {
   var params2 =[uid];
   db.all(sql1,params1, (err, results, fields) => {
      if (err) {
-       console.log("error1");
+      // console.log("error1");
       return res.send([{'fname':null,'lname': null,'mobile':null,'email':null,'error':true}]);
      }else{
        if(results[0].res===1){
         db.all(sql2,params2, (err, results, fields) => {
           if (err) {
-            console.log("error2");
+            //console.log("error2");
             return res.send([{'fname':null,'lname': null,'mobile':null,'email':null,'error':true}]);
           }else{
             var fname = results[0].fname;
@@ -174,7 +174,7 @@ app.get('/app/getuserdetails', (req, res) => {
           }  
           });
        }else{
-        console.log("error3");
+        //console.log("error3");
         return res.send([{'fname':null,'lname': null,'mobile':null,'email':null,'error':true}]);
        }
      }
@@ -191,21 +191,21 @@ app.get('/app/myusrlist', (req, res) => {
   var params2 =['true','true','false',uid];
   db.all(sql1,params1, (err, results, fields) => {
      if (err) {
-       console.log("error1");
+       //console.log("error1");
       return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
      }else{
        if(results[0].res===1){
         db.all(sql2,params2, (err, results, fields) => {
           if (err) {
-            console.log("error2");
+            //console.log("error2");
             return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
           }else{
             return res.send(results);
           }  
           });
        }else{
-        console.log("error3");
-        console.log(results[0].res);
+        //console.log("error3");
+        //console.log(results[0].res);
         return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
        }
      }
@@ -224,21 +224,21 @@ app.get("/app/searchusers", (req, res) => {
     var params2 =['false','false','false',strm,strm+'%',strm+'%',strm+'%',strm+'%',uid];
     db.all(sql1,params1, (err, results) => {
       if (err) {
-        console.log("error1");
+        //console.log("error1");
        return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
       }else{
         if(results[0].res===1){
          db.all(sql2,params2, (err, results) => {
            if (err) {
-             console.log("error2");
+             //console.log("error2");
              return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
            }else{
              return res.send(results);
            }  
            });
         }else{
-         console.log("error3");
-         console.log(results[0].res);
+         //console.log("error3");
+         //console.log(results[0].res);
          return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
         }
       }
@@ -254,7 +254,7 @@ app.get("/app/checkacc", (req, res) => {
   var params1 =[uid, gname];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'hasaccess':'null','error':'true'}]);
     }else{
       if(results[0].res===1){
@@ -271,7 +271,7 @@ app.get("/app/getmytodo", (req, res) => {
   let skey = headr["skey"];
   let uid = headr["uid"];
   let gname = headr["gname"];
-  console.log("skey : "+skey +", uid :"+uid+", gname:"+gname);
+  //console.log("skey : "+skey +", uid :"+uid+", gname:"+gname);
   if(uid==gname){
     var sql3 ="SELECT id as msgid, short_msg as smsg, long_msg as lmsg, status as mmsgsts, sender as msgby, 'true' as ownlst, strftime('%d-%m',added_dt) as adddte, secret FROM All_MESSAGES WHERE receiver = ? ORDER BY status DESC, id DESC";
     var params3 =[uid];
@@ -287,33 +287,33 @@ app.get("/app/getmytodo", (req, res) => {
   var params1 =[uid, skey];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
     }else{
       if(results[0].res===1){
        db.all(sql2,params2, (err, results) => {
          if (err) {
-           console.log("error2");
+           //console.log("error2");
            return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
          }else{if(results[0].res===1){
           db.all(sql3,params3, (err, results) => {
             if (err) {
-              console.log("error2");
+             //console.log("error2");
               return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
             }else{
               return res.send(results);
             }  
             });
          }else{
-          console.log("error3");
-          console.log(results[0].res);
+          //console.log("error3");
+          //console.log(results[0].res);
           return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
          }
          }  
          });
       }else{
-       console.log("error3");
-       console.log(results[0].res);
+       //console.log("error3");
+       //console.log(results[0].res);
        return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
       }
     }
@@ -356,7 +356,7 @@ app.post('/app/createaccreq', (req, res) => {
         return res.send([{'error':'true','status': null}]);
       }
     }else{
-      console.log(err);
+      //console.log(err);
       return res.send([{'error':'true','status': null}]);
 	}
   });
@@ -373,21 +373,21 @@ app.get("/app/getrequests", (req, res) => {
   var params2 =[uid];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
     }else{
       if(results[0].res===1){
        db.all(sql2,params2, (err, results) => {
          if (err) {
-           console.log("error2");
+           //console.log("error2");
            return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
          }else{
            return res.send(results);
          }  
          });
       }else{
-       console.log("error3");
-       console.log(results[0].res);
+       //console.log("error3");
+       //console.log(results[0].res);
        return res.send([{'fname':null,'lname': null,'hasaccess':null,'updated':null,'username':null,'error':true}]);
       }
     }
@@ -408,13 +408,13 @@ app.post("/app/accrejreq", (req, res) => {
   var params2 =[gname, uid];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'error':'true','status': 'db issue'}]);
     }else{
       
       if(results[0].res===1){
         if(upd === "Add"){
-          console.log(params2);
+          //console.log(params2);
           db.run(sql2,params2, (err, results) => {
             if (err) {
               return res.send([{'error':'true','status': 'db issue UPDATE error'}]);
@@ -452,7 +452,7 @@ app.post("/app/postmessage", (req, res) => {
   var params2 =[smsg, lmsg,secret,receiver,sender];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'error':'true','status': 'db issue'}]);
     }else{
       if(results[0].res===1){
@@ -483,13 +483,13 @@ app.post("/app/updmsgstatus", (req, res) => {
   var params2 =[cngsts, msgid];
   db.all(sql1,params1, (err, results) => {
     if (err) {
-      console.log("error1");
+      //console.log("error1");
      return res.send([{'error':'true','status': 'db issue'}]);
     }else{
       if(results[0].res===1){
           db.run(sql2,params2, (err, results) => {
             if (err) {
-              console.log("error2");
+              //console.log("error2");
               return res.send([{'error':'true','status': 'db issue INSERT error'}]);
             }else{
               return res.send([{'error':'false','status': 'success'}]);
@@ -502,4 +502,39 @@ app.post("/app/updmsgstatus", (req, res) => {
   });
 });
 //-----------------------------------------------------------------
+
+app.get("/app/accuserlist", (req, res) => {
+  headr = req.headers;
+  let skey = headr["skey"];
+  let uid = headr["uid"];
+  var sql1 ='SELECT count(username) AS res from USER_LOGIN_INFO WHERE username like ? and sessionkey =?';
+  var sql2 ="SELECT fname, lname, username, email, 'fasle' as error FROM USER_INFO WHERE username in (SELECT p_username FROM USERACCESS_INFO WHERE g_username = ? AND request_status = 'C') ORDER by fname, id";
+  var params1 =[uid, skey];
+  var params2 =[uid];
+  db.all(sql1,params1, (err, results) => {
+    if (err) {
+      //console.log("error1");
+     return res.send([{'fname':null,'lname': null,'email':null, 'error':true}]);
+    }else{
+      if(results[0].res===1){
+       db.all(sql2,params2, (err, results) => {
+         if (err) {
+           //console.log("error2");
+           return res.send([{'fname':null,'lname': null,'email':null, 'error':true}]);
+         }else{
+           //console.log(results);
+           return res.send(results);
+         }  
+         });
+      }else{
+       //console.log("error3");
+       //console.log(results[0].res);
+       return res.send([{'fname':null,'lname': null,'email':null, 'error':true}]);
+      }
+    }
+  });
+});
+
+//-----------------------------------------------------------------------------
+
 https.createServer(options,app).listen(PORT);
